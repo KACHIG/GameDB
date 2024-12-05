@@ -1,0 +1,132 @@
+/* General Styles */
+body {
+  background-color: #e6e6e6;
+  color: #000;
+  text-align: center;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Search Bar */
+.search-bar-container {
+  margin: 10px auto;
+  width: 80%;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Carousel */
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 20px auto;
+}
+
+.carousel-item {
+  width: 120px;
+  height: 150px;
+  background-color: #7a7a7a;
+  border-radius: 8px;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-random {
+  margin-top: 20px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+footer {
+  margin-top: 30px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Game Info Section */
+.game-info-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.game-image {
+  width: 150px;
+  height: 200px;
+  background-color: #7a7a7a;
+  border-radius: 8px;
+}
+
+.game-details {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.game-details h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.game-details p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.game-metadata {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.game-metadata span {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.genres-ratings {
+  width: 120px;
+  padding: 10px;
+  background-color: #b3b3b3;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Visibility and Stacking */
+#gameInfo {
+  z-index: 99;
+  position: relative;
+}
+
+#mainPage {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
