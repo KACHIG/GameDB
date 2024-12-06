@@ -9,16 +9,18 @@
 </head>
 <body>
   <!-- Main Page -->
-  <div id="mainPage" >
+  <div id="mainPage">
     <header>
       <h1>GameDB</h1>
       <div class="search-bar-container">
         <input
+          id="searchField"
           type="text"
           class="form-control search-bar"
           placeholder="Search for a game..."
           aria-label="Search"
         />
+        <button onclick="gameSearch()" class="btn btn-primary">Search</button>
       </div>
     </header>
 
@@ -40,12 +42,28 @@
     </footer>
   </div>
 
+  <div id="gameResults" style="visibility: hidden;">
+    <header>
+      <h1>GameDB</h1>
+    </header>
+  
+    <main>
+      <div class="game-results-container">
+        <!-- Game search results will be dynamically injected here -->
+      </div>
+    </main>
+  
+    <footer>
+      <button onclick="backToMain()" class="btn btn-primary">Back to Main Page</button>
+    </footer>
+  </div>
+  
   <!-- Game Info Page -->
   <div id="gameInfo" style="visibility: hidden;">
     <header>
       <h1>GameDB</h1>
     </header>
-
+  
     <main>
       <div class="game-info-container">
         <div class="game-image"></div>
@@ -64,14 +82,11 @@
           <p>Ratings</p>
         </div>
       </div>
-
-      <div class="carousel-container">
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-      </div>
     </main>
+  
+    <footer>
+      <button onclick="backToMain()" class="btn btn-primary">Back to Main Page</button>
+    </footer>
   </div>
 
   <script src="./scripts/script.js"></script>
