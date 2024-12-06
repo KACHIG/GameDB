@@ -78,55 +78,71 @@ footer .btn:hover {
 }
 
 /* Game Info Section */
+#gameInfo {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+
 .game-info-container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 20px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  margin: 20px auto;
-  max-width: 800px;
+  gap: 20px;
 }
 
 .game-image {
-  width: 150px;
-  height: 200px;
-  background-color: #7a7a7a;
-  border-radius: 8px;
+  flex: 1;
+}
+
+.game-image img {
+  width: 100%;
+  height: auto;
+  background-color: #ccc;
 }
 
 .game-details {
-  flex: 1;
-  margin-left: 20px;
+  flex: 2;
 }
 
 .game-details h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
+  margin: 0 0 10px;
+  font-size: 22px;
 }
 
 .game-details p {
-  font-size: 14px;
-  margin-bottom: 10px;
+  margin: 5px 0;
 }
 
-.game-metadata {
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.game-metadata span {
-  display: inline-block;
-  margin-right: 15px;
+.game-metadata p {
+  margin: 5px 0;
 }
 
 .genres-ratings {
-  width: 120px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.genres-ratings div {
+  background-color: #ccc;
   padding: 10px;
-  background-color: #b3b3b3;
-  border-radius: 8px;
+  border: 1px solid black;
   text-align: center;
+}
+
+.screenshots-container {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.screenshots-container img {
+  width: 20%;
+  height: auto;
+  background-color: #ccc;
 }
 
 /* Visibility and Stacking */

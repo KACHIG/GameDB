@@ -66,21 +66,33 @@
   
     <main>
       <div class="game-info-container">
-        <div class="game-image"></div>
+        <div class="game-image">
+          <img src="#" alt="Game Image" id="gameImage" />
+        </div>
         <div class="game-details">
-          <h2>Game Name</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam finibus dolor nec risus laoreet, vitae aliquam quam bibendum.</p>
+          <h2 id="gameName">Game Name</h2>
+          <p id="gameDescription">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam
+            finibus dolor nec risus laoreet, vitae aliquam quam bibendum.
+          </p>
           <div class="game-metadata">
-            <span>Release Date: XX/XX/XXXX</span>
-            <span>Platform</span>
-            <span>Developer</span>
-            <span>Publisher</span>
+            <p id="releaseDate">Release Date: XX/XX/XXXX</p>
+            <p id="platforms">Platform</p>
+            <p id="developer">Developer</p>
+            <p id="publisher">Publisher</p>
           </div>
         </div>
         <div class="genres-ratings">
-          <p>Genres</p>
-          <p>Ratings</p>
+          <div id="genres">
+            <p>Genres</p>
+          </div>
+          <div id="ratings">
+            <p>Ratings</p>
+          </div>
         </div>
+      </div>
+      <div class="screenshots-container" id="screenshots">
+        <!-- Screenshots dynamically inserted here -->
       </div>
     </main>
   
