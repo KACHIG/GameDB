@@ -65,34 +65,34 @@
     </header>
   
     <main>
+      <!-- Game Info Container -->
       <div class="game-info-container">
+        <!-- Left side: Cover Image -->
         <div class="game-image">
-          <img src="#" alt="Game Image" id="gameImage" />
+          <img id="coverImage" src="" alt="Game Cover" />
         </div>
+  
+        <!-- Right side: Game Details -->
         <div class="game-details">
           <h2 id="gameName">Game Name</h2>
-          <p id="gameDescription">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam
-            finibus dolor nec risus laoreet, vitae aliquam quam bibendum.
-          </p>
+          <p id="gameSummary">Game Summary...</p>
           <div class="game-metadata">
-            <p id="releaseDate">Release Date: XX/XX/XXXX</p>
-            <p id="platforms">Platform</p>
-            <p id="developer">Developer</p>
-            <p id="publisher">Publisher</p>
+            <p><strong>Release Date:</strong> <span id="releaseDate">XX/XX/XXXX</span></p>
+            <p><strong>Platform:</strong> <span id="platform">Platform</span></p>
+            <p><strong>Developer:</strong> <span id="developer">Developer</span></p>
+            <p><strong>Publisher:</strong> <span id="publisher">Publisher</span></p>
           </div>
-        </div>
-        <div class="genres-ratings">
-          <div id="genres">
-            <p>Genres</p>
-          </div>
-          <div id="ratings">
-            <p>Ratings</p>
+          <!-- Genres and Ratings -->
+          <div class="genres-ratings">
+            <div class="info-box" id="gameGenres">Genres</div>
+            <div class="info-box" id="gameRatings">Ratings</div>
           </div>
         </div>
       </div>
+  
+      <!-- Screenshots Section -->
       <div class="screenshots-container" id="screenshots">
-        <!-- Screenshots dynamically inserted here -->
+        <!-- Screenshots will be dynamically inserted here -->
       </div>
     </main>
   
@@ -100,6 +100,7 @@
       <button onclick="backToMain()" class="btn btn-primary">Back to Main Page</button>
     </footer>
   </div>
+  
 
   <script src="./scripts/script.js"></script>
 </body>

@@ -166,7 +166,7 @@ async function gameSelect(gameId) {
   myHeaders.append("x-api-key", apiKey);
   myHeaders.append("Content-Type", "application/javascript");
 
-  const raw = "fields genres.*, name, platforms.*, rating, screenshots.*, summary, release_dates.*, involved_companies.*; where id = " + gameId + ";";
+  const raw = "fields cover, genres.*, name, platforms.*, rating, screenshots.*, summary, release_dates.*, involved_companies.*; where id = " + gameId + ";";
 
   const requestOptions = {
     method: "POST",
@@ -180,74 +180,102 @@ async function gameSelect(gameId) {
   let data = await response.json();
   console.log(data);
 
-  if (data && data.length === 1) { // Ensure the array has exactly one object
+  if (data && data.length === 1) {
+    showGameInfo();
     const game = data[0];
     const gameInfoDiv = document.getElementById("gameInfo");
-    gameInfoDiv.innerHTML = ""; // Clear previous content
 
-    // Game Title
-    const title = document.createElement("h1");
-    title.textContent = game.name || "Unknown Game";
-    gameInfoDiv.appendChild(title);
+    if (gameInfoDiv) {
+      // Ensure gameInfoDiv is visible
+      gameInfoDiv.style.visibility = "visible";
 
-    // Game Summary
-    if (game.summary) {
-      const summary = document.createElement("p");
-      summary.textContent = game.summary;
-      gameInfoDiv.appendChild(summary);
+      // Set game cover image
+      const coverImage = document.getElementById("coverImage");
+      if (coverImage && game.cover) {
+        coverImage.src = await getCover(game.cover); // Assuming getCover is a function to fetch cover URL
+      }
+
+      // Set game title
+      const title = document.getElementById("gameName");
+      if (title) {
+        title.textContent = game.name || "Unknown Game";
+      }
+
+      // Set game summary
+      const summary = document.getElementById("gameSummary");
+      if (summary) {
+        summary.textContent = game.summary || "No summary available";
+      }
+
+      // Set release date
+      const releaseDate = document.getElementById("releaseDate");
+      if (releaseDate) {
+        releaseDate.textContent = game.release_dates && game.release_dates[0] 
+                                  ? game.release_dates[0].human
+                                  : "Release date unknown";
+      }
+
+      // Set platform(s)
+      const platform = document.getElementById("platform");
+      if (platform) {
+        platform.textContent = game.platforms && game.platforms.length
+          ? game.platforms.map(p => p.abbreviation || p.name).join(", ")
+          : "Platform unknown";
+      }
+
+      // Set developer
+      const developer = document.getElementById("developer");
+      if (developer) {
+        developer.textContent = game.involved_companies
+          ? game.involved_companies.find(c => c.publisher)?.company.name || "Unknown Developer"
+          : "Unknown Developer";
+      }
+
+      // Set publisher
+      const publisher = document.getElementById("publisher");
+      if (publisher) {
+        publisher.textContent = game.involved_companies
+          ? game.involved_companies.find(c => c.developer)?.company.name || "Unknown Publisher"
+          : "Unknown Publisher";
+      }
+
+      // Set genres
+      const genres = document.getElementById("gameGenres");
+      if (genres) {
+        genres.textContent = game.genres && game.genres.length
+          ? game.genres.join(", ")
+          : "No genres available";
+      }
+
+      // Set ratings
+      const ratings = document.getElementById("gameRatings");
+      if (ratings) {
+        ratings.textContent = game.rating ? `Rating: ${game.rating.toFixed(1)}` : "No rating available";
+      }
+
+      // Add screenshots
+      const screenshotsContainer = document.getElementById("screenshots");
+      if (screenshotsContainer) {
+        screenshotsContainer.innerHTML = ""; // Clear any existing screenshots
+        if (game.screenshots && game.screenshots.length > 0) {
+          game.screenshots.forEach(screenshot => {
+            const img = document.createElement("img");
+            img.src = `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${screenshot.image_id}.jpg`;
+            img.alt = "Game Screenshot";
+            screenshotsContainer.appendChild(img);
+          });
+        } else {
+          const noScreenshotsMessage = document.createElement("p");
+          noScreenshotsMessage.textContent = "No screenshots available.";
+          screenshotsContainer.appendChild(noScreenshotsMessage);
+        }
+      }
+    } else {
+      console.error("GameInfo div not found.");
     }
-
-    // Game Rating
-    if (game.rating) {
-      const rating = document.createElement("p");
-      rating.textContent = `Rating: ${game.rating.toFixed(1)}`;
-      gameInfoDiv.appendChild(rating);
-    }
-
-    // Platforms
-    if (game.platforms && game.platforms.length > 0) {
-      const platforms = document.createElement("p");
-      platforms.textContent = "Platforms: " + game.platforms.map((p) => p.abbreviation || p.name).join(", ");
-      gameInfoDiv.appendChild(platforms);
-    }
-
-    // Genres
-    if (game.genres && game.genres.length > 0) {
-      const genres = document.createElement("p");
-      genres.textContent = "Genres: " + game.genres.join(", ");
-      gameInfoDiv.appendChild(genres);
-    }
-
-    // Screenshots
-    if (game.screenshots && game.screenshots.length > 0) {
-      const screenshotsContainer = document.createElement("div");
-      screenshotsContainer.className = "screenshots-container";
-
-      game.screenshots.forEach((screenshot) => {
-        const img = document.createElement("img");
-        img.src = `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${screenshot.image_id}.jpg`;
-        img.alt = "Game Screenshot";
-        screenshotsContainer.appendChild(img);
-      });
-
-      gameInfoDiv.appendChild(screenshotsContainer);
-    }
-
-    // Release Dates
-    if (game.release_dates && game.release_dates.length > 0) {
-      const releaseDates = document.createElement("p");
-      const formattedDates = game.release_dates.map((date) => `${date.human} (${date.region || "Unknown Region"})`).join(", ");
-      releaseDates.textContent = `Release Dates: ${formattedDates}`;
-      gameInfoDiv.appendChild(releaseDates);
-    }
-
-    showGameInfo(); // Make the gameInfo section visible
-} else if (data && data.length !== 1) {
-    console.error("Data array must contain exactly one game object.");
-} else {
+  } else {
     console.error("No data found for the selected game.");
-}
-
+  }
 };
 
 function displayCarousel() {

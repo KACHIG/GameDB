@@ -77,72 +77,77 @@ footer .btn:hover {
   background-color: #333;
 }
 
-/* Game Info Section */
+/* Game Info Page */
 #gameInfo {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .game-info-container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 20px;
-}
-
-.game-image {
-  flex: 1;
 }
 
 .game-image img {
   width: 100%;
   height: auto;
   background-color: #ccc;
+  border-radius: 8px;
+  max-width: 350px;
 }
 
 .game-details {
-  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .game-details h2 {
+  font-size: 28px;
   margin: 0 0 10px;
-  font-size: 22px;
 }
 
 .game-details p {
   margin: 5px 0;
+  font-size: 16px;
 }
 
 .game-metadata p {
   margin: 5px 0;
+  font-size: 14px;
+  color: #666;
 }
 
 .genres-ratings {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 20px;
+  margin-top: 10px;
 }
 
-.genres-ratings div {
-  background-color: #ccc;
+.info-box {
+  background-color: #ddd;
   padding: 10px;
-  border: 1px solid black;
+  border: 1px solid #aaa;
+  border-radius: 5px;
   text-align: center;
+  flex: 1;
 }
 
 .screenshots-container {
   margin-top: 20px;
   display: flex;
   gap: 10px;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .screenshots-container img {
-  width: 20%;
+  width: 100px;
   height: auto;
   background-color: #ccc;
+  border-radius: 5px;
 }
 
 /* Visibility and Stacking */
