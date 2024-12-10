@@ -23,7 +23,7 @@ function backToMain() {
 
   window.scrollTo({
     top: 0,
-    behavior: 'smooth' 
+    behavior: 'instant' 
   });
 };
 
@@ -162,7 +162,7 @@ async function gameSearch() {
   myHeaders.append("x-api-key", apiKey);
   myHeaders.append("Content-Type", "application/javascript");
 
-  const raw = "where rating > 75; search \"" + searchQuery +"\"; fields name, cover;";
+  const raw = "where rating > 75; search \"" + searchQuery +"\"; fields name, cover, summary;";
   console.log(raw);
   const requestOptions = {
     method: "POST",
@@ -181,41 +181,53 @@ async function gameSearch() {
   if (data && data.length > 1) {
     // Loop through each game and dynamically create result items
     data.forEach(async (game) => {
-      const resultItem = document.createElement("div");
-      resultItem.className = "game-result-item";
-      resultItem.style.cursor = "pointer"; // Add a pointer cursor to indicate it's clickable
-  
-      // Add a click event listener to call gameSelect with the game's ID
-      resultItem.addEventListener("click", () => {
-        gameSelect(game.id); // Pass the game's ID to the function
-      });
-  
-      // Create and append the cover image
-      const coverImage = document.createElement("img");
-      try {
-        if (game.cover) {
-          coverImage.src = await getCover(game.cover); // Await the async getCover function
-        } else {
-          coverImage.src = "#"; // Fallback image
+        const resultItem = document.createElement("div");
+        resultItem.className = "game-result-item p-3 border rounded shadow-sm mb-4 d-flex align-items-center justify-content-center"; // Flexbox for centering
+        resultItem.style.cursor = "pointer"; // Add a pointer cursor to indicate it's clickable
+
+        // Add a click event listener to call gameSelect with the game's ID
+        resultItem.addEventListener("click", () => {
+            gameSelect(game.id); // Pass the game's ID to the function
+        });
+
+        // Create and append the cover image
+        const coverImage = document.createElement("img");
+        coverImage.className = "img-fluid mb-3 me-3"; // Bootstrap classes for image responsiveness and margin-right
+        try {
+            if (game.cover) {
+                coverImage.src = await getCover(game.cover); // Await the async getCover function
+            } else {
+                coverImage.src = "#"; // Fallback image if no cover exists
+            }
+        } catch (error) {
+            console.error("Error fetching cover:", error);
+            coverImage.src = "#"; // Fallback if there's an error
         }
-      } catch (error) {
-        console.error("Error fetching cover:", error);
-        coverImage.src = "#"; // Fallback if there's an error
-      }
-      resultItem.appendChild(coverImage);
-  
-      // Create and append the game name
-      const gameName = document.createElement("p");
-      gameName.textContent = game.name || "Unknown Game"; // Fallback for game name
-      resultItem.appendChild(gameName);
-  
-      // Append the result item to the results container
-      resultsContainer.appendChild(resultItem);
+        resultItem.appendChild(coverImage);
+
+        // Create and append the game name (title)
+        const gameDetails = document.createElement("div");
+        gameDetails.className = "game-details d-flex flex-column"; // Flex column for title and summary alignment
+
+        const gameName = document.createElement("h5");
+        gameName.className = "game-title mb-2"; // Class for the title
+        gameName.textContent = game.name || "Unknown Game"; // Fallback for game name
+        gameDetails.appendChild(gameName);
+
+        // Create and append the game summary
+        const gameSummary = document.createElement("p");
+        gameSummary.className = "game-summary"; // Class for the summary
+        gameSummary.textContent = game.summary || "No summary available."; // Fallback for game summary
+        gameDetails.appendChild(gameSummary);
+
+        resultItem.appendChild(gameDetails);
+
+        // Append the result item to the results container
+        resultsContainer.appendChild(resultItem);
     });
   } else {
-    resultsContainer.innerHTML = "<p>No games found.</p>";
+      resultsContainer.innerHTML = "<p>No games found.</p>";
   }
-  
 
   showGameResults();
 };
@@ -303,8 +315,8 @@ async function gameSelect(gameId) {
       const releaseDate = document.getElementById("releaseDate");
       if (releaseDate) {
         releaseDate.textContent = game.release_dates && game.release_dates[0] 
-                                  ? game.release_dates[0].human
-                                  : "Release date unknown";
+          ? game.release_dates[0].human
+          : "Release date unknown";
       }
 
       // Set platform(s)
@@ -328,7 +340,7 @@ async function gameSelect(gameId) {
       // Set ratings
       const ratings = document.getElementById("gameRatings");
       if (ratings) {
-        ratings.textContent = game.rating ? `Rating: ${game.rating.toFixed(1)}` : "No rating available";
+        ratings.textContent = game.rating ? `${game.rating.toFixed(1)}` : "No rating available";
       }
 
       // Add screenshots
@@ -380,7 +392,7 @@ async function gameSelect(gameId) {
 };
 
 async function displayCarousel() {
-  const carouselIds = ["ci1", "ci2", "ci3", "ci4", "ci5"];
+  const carouselIds = ["game-image-1", "game-image-2", "game-image-3", "game-image-4", "game-image-5", "game-image-6"];
   const promises = carouselIds.map(async (id) => {
     const image = document.getElementById(id);
     try {
@@ -403,6 +415,7 @@ async function displayCarousel() {
   await Promise.all(promises);
 }
 
+/*
 async function randomButton() {
   // Pick a random game query from the gamesForRandom list
   const randomIndex = Math.floor(Math.random() * gamesForRandom.length);
@@ -443,6 +456,6 @@ async function randomButton() {
     console.error("Error fetching a random game:", error);
   }
 }
-
+*/
 
 displayCarousel();
