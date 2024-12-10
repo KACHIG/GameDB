@@ -1,7 +1,8 @@
 apiKey = "rJ0HxvXQ6t4H1e2MXzzpXlhFmRfAyO83QAearWi1";
 
-let uniqueNumbers = [5];
-let findGame = 0;
+const gamesForRandom = ["mario", "zelda", "doom", "xenoblade", "xenosaga", "xenogears", "trails in the sky", "trails to azure", "tekken", "street fighter", "guilty gear", "yakuza", "half life", "Ys", "sonic", "metal gear", "fire emblem", "mega man"]
+
+let usedGames = []
 
 function showGameResults() {
   document.getElementById("mainPage").style.visibility = "hidden";
@@ -52,26 +53,6 @@ lightbox.addEventListener("click", (event) => {
   }
 });
 
-async function getCount() {
-    const myHeaders = new Headers();
-    myHeaders.append("x-api-key", apiKey);
-    myHeaders.append("Content-Type", "application/javascript");
-  
-    const raw = "";
-  
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
-  
-    let response = await fetch("https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games/count", requestOptions)
-  
-    let data = await response.json();
-    return data.count;
-  };
-
 async function getCover(coverId) {
   const myHeaders = new Headers();
   myHeaders.append("x-api-key", apiKey);
@@ -112,35 +93,67 @@ async function getCompany(companyId) {
   let data = await response.json();
   return data[0]
 };
-  
+ 
 async function getRandomGame() {
-    let gameCount = await getCount();
-    findGame = Math.floor(Math.random() * gameCount) + 1;
-    while (uniqueNumbers.includes(findGame)) {
-      findGame = Math.floor(Math.random() * gameCount) + 1; // Generate random number between 1 and 100
-    }
-    uniqueNumbers.push(findGame);
+  // Ensure no duplicates and select a random game
+  const availableGames = gamesForRandom.filter(game => !usedGames.includes(game));
+  if (availableGames.length === 0) {
+    console.log("All games have been used!");
+    return null;
+  }
 
-    const myHeaders = new Headers();
-    myHeaders.append("x-api-key", apiKey);
-    myHeaders.append("Content-Type", "application/javascript");
-  
-    const raw = "fields *; where id = " + findGame + ";";
-  
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
-  
-    let response = await fetch("https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games", requestOptions)
-  
-    let data = await response.json();
-    
-    let cover = await getCover(data[0].cover);
-    return cover
+  // Pick a random game from available games
+  const randomIndex = Math.floor(Math.random() * availableGames.length);
+  const searchQuery = availableGames[randomIndex];
+
+  // Append the selected game to usedGames
+  usedGames.push(searchQuery);
+
+  const myHeaders = new Headers();
+  myHeaders.append("x-api-key", apiKey);
+  myHeaders.append("Content-Type", "application/javascript");
+
+  const raw = `where rating > 75; search "${searchQuery}"; fields name, cover; limit 50;`;
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
   };
+
+  try {
+    const response = await fetch(
+      "https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games",
+      requestOptions
+    );
+
+    const data = await response.json();
+
+    if (data && data.length > 0) {
+      // Limit random selection to up to 10 games or fewer
+      const randomGameIndex = Math.floor(Math.random() * data.length);
+
+      // Retrieve the cover image URL
+      const game = data[randomGameIndex];
+      const coverUrl = await getCover(game.cover);
+
+      // Return the game object with the cover URL
+      return {
+        id: game.id,
+        name: game.name,
+        cover: coverUrl
+      };
+    } else {
+      console.error("No game data found for the query:", searchQuery);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching random game:", error);
+    return null;
+  }
+}
+
 
 async function gameSearch() {
   let searchQuery = document.getElementById("searchField").value.trim();
@@ -208,74 +221,36 @@ async function gameSearch() {
 };
 
 async function updateCompanyInfo(game) {
-  const developer = document.getElementById("developer");
-  const publisher = document.getElementById("publisher");
+  const developerElement = document.getElementById("developer");
+  const publisherElement = document.getElementById("publisher");
 
-  // Fallback values for unknown companies
-  if (!game.involved_companies || game.involved_companies.length === 0) {
-    console.log("No involved companies, setting defaults.");
-    if (developer) developer.textContent = "Unknown Developer";
-    if (publisher) publisher.textContent = "Unknown Publisher";
+  if (!game.involved_companies?.length) {
+    developerElement.textContent = "Unknown Developer";
+    publisherElement.textContent = "Unknown Publisher";
     return;
   }
 
-  // Create flags to check if developer or publisher has been set
-  let developerSet = false;
-  let publisherSet = false;
-
-  // Iterate through involved companies with async/await
-  for (const involvedCompany of game.involved_companies) {
-    try {
-      // Get the company ID
-      const companyId = involvedCompany.company;
-      console.log(`Fetching company data for company ID: ${companyId}`);
-      
-      // Fetch the company data using your getCompany function
-      const companyData = await getCompany(companyId);
-
-      // Log the full company data to inspect the structure
-      console.log(`Fetched company data for ${companyId}:`, companyData);
-
-      // Check if 'developed' and 'published' fields exist in company data
-      const isDeveloper = companyData.developed && companyData.developed.includes(game.id);
-      const isPublisher = companyData.published && companyData.published.includes(game.id);
-
-      console.log(`Is Developer: ${isDeveloper}, Is Publisher: ${isPublisher}`);
-
-      // Update the developer if the company is a developer
-      if (isDeveloper && !developerSet) {
-        if (developer) {
-          console.log(`Setting developer: ${companyData.name}`);
-          developer.textContent = companyData.name;
-        }
-        developerSet = true;  // Prevent further updates to the developer field
-      }
-
-      // Update the publisher if the company is a publisher
-      if (isPublisher && !publisherSet) {
-        if (publisher) {
-          console.log(`Setting publisher: ${companyData.name}`);
-          publisher.textContent = companyData.name;
-        }
-        publisherSet = true;  // Prevent further updates to the publisher field
-      }
-
-    } catch (error) {
-      console.error(`Error fetching company data for ID ${involvedCompany.company}:`, error);
-      // If an error occurs, just skip this company and continue
+  const promises = game.involved_companies.map(async (company) => {
+    const companyData = await getCompany(company.company);
+    if (companyData) {
+      return {
+        name: companyData.name,
+        isDeveloper: companyData.developed?.includes(game.id),
+        isPublisher: companyData.published?.includes(game.id),
+      };
     }
-  }
+    return null;
+  });
 
-  // If neither developer nor publisher were set, show the fallback text
-  if (!developerSet && developer) {
-    console.log("Setting fallback developer.");
-    developer.textContent = "Unknown Developer";
-  }
-  if (!publisherSet && publisher) {
-    console.log("Setting fallback publisher.");
-    publisher.textContent = "Unknown Publisher";
-  }
+  const companies = (await Promise.all(promises)).filter(Boolean);
+
+  const developer = companies.find((c) => c.isDeveloper);
+  const publisher = companies.find((c) => c.isPublisher);
+
+  developerElement.textContent = developer?.name || "Unknown Developer";
+  publisherElement.textContent = publisher?.name || "Unknown Publisher";
 }
+
 
 
 async function gameSelect(gameId) {
@@ -359,47 +334,43 @@ async function gameSelect(gameId) {
       // Add screenshots
       const screenshotsContainer = document.getElementById("screenshots");
       if (screenshotsContainer) {
-        screenshotsContainer.innerHTML = ""; // Clear any existing screenshots
+        // Clear any existing content in the container
+        screenshotsContainer.innerHTML = "";
 
         if (game.screenshots && game.screenshots.length > 0) {
           game.screenshots.forEach((screenshot) => {
+            // Create image element for each screenshot
             const img = document.createElement("img");
             img.src = `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${screenshot.image_id}.jpg`;
             img.alt = "Game Screenshot";
-            img.className = "screenshot"; // Add the 'screenshot' class
-            img.style.cursor = "pointer"; // Change cursor to pointer for click indication
+            img.className = "screenshot";
+            img.style.cursor = "pointer"; // Indicate clickable
 
-            // Add click event to expand the image
-            img.addEventListener("click", () => {
-              const lightbox = document.createElement("div");
-              lightbox.className = "lightbox";
-
-              const expandedImg = document.createElement("img");
-              expandedImg.src = img.src; // Use the same image source
-              expandedImg.alt = img.alt;
-
-              // Close lightbox on click
-              lightbox.addEventListener("click", () => {
-                document.body.removeChild(lightbox);
-              });
-
-              lightbox.appendChild(expandedImg);
-              document.body.appendChild(lightbox);
-            });
-
+            // Append the image to the container
             screenshotsContainer.appendChild(img);
           });
         } else {
+          // Add a fallback message if no screenshots are available
           const noScreenshotsMessage = document.createElement("p");
           noScreenshotsMessage.textContent = "No screenshots available.";
+          noScreenshotsMessage.className = "no-screenshots-message"; // Add a unique class
           screenshotsContainer.appendChild(noScreenshotsMessage);
         }
       }
 
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth' 
+      // Attach click listener to all images with the "screenshot" class
+      document.querySelectorAll(".screenshot").forEach((image) => {
+        image.addEventListener("click", () => {
+          lightbox.style.display = "flex"; // Show the lightbox
+          lightboxImage.src = image.src; // Set the lightbox image
+          lightboxImage.alt = image.alt; // Set the alt text for accessibility
+        });
       });
+
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth' 
+        });
     } else {
       console.error("GameInfo div not found.");
     }
@@ -408,22 +379,70 @@ async function gameSelect(gameId) {
   }
 };
 
-function displayCarousel() {
-  getRandomGame().then(value => {
-    document.getElementById("ci1").src = value
+async function displayCarousel() {
+  const carouselIds = ["ci1", "ci2", "ci3", "ci4", "ci5"];
+  const promises = carouselIds.map(async (id) => {
+    const image = document.getElementById(id);
+    try {
+      const game = await getRandomGame();
+      if (game) {
+        image.src = game.cover;
+
+        // Add click event listener to load the game details
+        image.addEventListener("click", () => {
+          gameSelect(game.id);
+        });
+      } else {
+        image.src = "#"; // Fallback image
+      }
+    } catch (error) {
+      console.error(`Failed to load carousel image for ${id}:`, error);
+      image.src = "#"; // Fallback image
+    }
   });
-  getRandomGame().then(value => {
-    document.getElementById("ci2").src = value
-  });
-  getRandomGame().then(value => {
-    document.getElementById("ci3").src = value
-  });
-  getRandomGame().then(value => {
-    document.getElementById("ci4").src = value
-  });
-  getRandomGame().then(value => {
-    document.getElementById("ci5").src = value
-  });
-};
+  await Promise.all(promises);
+}
+
+async function randomButton() {
+  // Pick a random game query from the gamesForRandom list
+  const randomIndex = Math.floor(Math.random() * gamesForRandom.length);
+  const randomGameQuery = gamesForRandom[randomIndex];
+
+  const myHeaders = new Headers();
+  myHeaders.append("x-api-key", apiKey);
+  myHeaders.append("Content-Type", "application/javascript");
+
+  const raw = `where rating > 75; search "${randomGameQuery}"; fields cover, genres.*, name, platforms.*, rating, screenshots.*, summary, release_dates.*, involved_companies.company; limit 50;`;
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+  };
+
+  try {
+    const response = await fetch(
+      "https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games",
+      requestOptions
+    );
+
+    const data = await response.json();
+
+    if (data && data.length > 0) {
+      // Randomly select one game from the search results
+      const randomGameIndex = Math.floor(Math.random() * data.length);
+      const selectedGame = data[randomGameIndex];
+
+      // Use gameSelect to display the selected game's details
+      await gameSelect(selectedGame.id);
+    } else {
+      console.error("No games found for the query:", randomGameQuery);
+    }
+  } catch (error) {
+    console.error("Error fetching a random game:", error);
+  }
+}
+
 
 displayCarousel();
