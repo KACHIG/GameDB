@@ -29,6 +29,23 @@ footer {
   text-align: center;
 }
 
+.footertext {
+  padding: 10px 0px 0px 0px;
+  font-size: 15px;
+  font-weight: lighter;
+  font-style: italic;
+  color: white;
+  text-decoration: none;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.footertext:hover {
+  color: white;
+  text-decoration: none;
+  transform: scale(1.2);
+}
+
 /* Search Bar */
 .search-bar-container {
   margin: 10px auto;

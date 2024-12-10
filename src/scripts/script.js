@@ -393,12 +393,22 @@ async function gameSelect(gameId) {
 
 async function displayCarousel() {
   const carouselIds = ["game-image-1", "game-image-2", "game-image-3", "game-image-4", "game-image-5", "game-image-6"];
-  const promises = carouselIds.map(async (id) => {
+  const nameIds = ["game-name-1", "game-name-2", "game-name-3", "game-name-4", "game-name-5", "game-name-6"];
+  
+  const promises = carouselIds.map(async (id, index) => {
     const image = document.getElementById(id);
+    const nameElement = document.getElementById(nameIds[index]); // Get the corresponding name element
+
     try {
       const game = await getRandomGame();
       if (game) {
+        // Update the image source
         image.src = game.cover;
+
+        // Update the name element
+        if (nameElement) {
+          nameElement.textContent = game.name; // Set the game name
+        }
 
         // Add click event listener to load the game details
         image.addEventListener("click", () => {
@@ -406,56 +416,25 @@ async function displayCarousel() {
         });
       } else {
         image.src = "#"; // Fallback image
+        if (nameElement) {
+          nameElement.textContent = "Unknown Game"; // Fallback text
+        }
       }
     } catch (error) {
-      console.error(`Failed to load carousel image for ${id}:`, error);
+      console.error(`Failed to load carousel item for ${id}:`, error);
       image.src = "#"; // Fallback image
+      if (nameElement) {
+        nameElement.textContent = "Error"; // Fallback text in case of an error
+      }
     }
   });
+
   await Promise.all(promises);
 }
 
-/*
-async function randomButton() {
-  // Pick a random game query from the gamesForRandom list
-  const randomIndex = Math.floor(Math.random() * gamesForRandom.length);
-  const randomGameQuery = gamesForRandom[randomIndex];
-
-  const myHeaders = new Headers();
-  myHeaders.append("x-api-key", apiKey);
-  myHeaders.append("Content-Type", "application/javascript");
-
-  const raw = `where rating > 75; search "${randomGameQuery}"; fields cover, genres.*, name, platforms.*, rating, screenshots.*, summary, release_dates.*, involved_companies.company; limit 50;`;
-
-  const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow"
-  };
-
-  try {
-    const response = await fetch(
-      "https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games",
-      requestOptions
-    );
-
-    const data = await response.json();
-
-    if (data && data.length > 0) {
-      // Randomly select one game from the search results
-      const randomGameIndex = Math.floor(Math.random() * data.length);
-      const selectedGame = data[randomGameIndex];
-
-      // Use gameSelect to display the selected game's details
-      await gameSelect(selectedGame.id);
-    } else {
-      console.error("No games found for the query:", randomGameQuery);
-    }
-  } catch (error) {
-    console.error("Error fetching a random game:", error);
-  }
+function shuffleButton() {
+  usedGames = []
+  displayCarousel();
 }
-*/
 
 displayCarousel();
