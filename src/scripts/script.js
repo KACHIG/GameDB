@@ -1,4 +1,5 @@
-apiKey = "rJ0HxvXQ6t4H1e2MXzzpXlhFmRfAyO83QAearWi1";
+apiKey = ""; //Enter your own API Key
+apiGateway = "" //Enter your own API Gateway
 
 const gamesForRandom = ["mario", "zelda", "doom", "xenoblade", "xenosaga", "xenogears", "trails in the sky", "trails to azure", "tekken", "street fighter", "guilty gear", "yakuza", "half life", "Ys", "sonic", "metal gear", "fire emblem", "mega man"]
 
@@ -67,7 +68,7 @@ async function getCover(coverId) {
     redirect: "follow"
   };
 
-  let response = await fetch("https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/covers", requestOptions)
+  let response = await fetch("https://" + apiGateway + ".execute-api.us-west-2.amazonaws.com/production/v4/covers", requestOptions)
 
   let data = await response.json();
   let imageId = data[0].image_id
@@ -88,7 +89,7 @@ async function getCompany(companyId) {
     redirect: "follow"
   };
 
-  let response = await fetch("https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/companies", requestOptions)
+  let response = await fetch("https://" + apiGateway + ".execute-api.us-west-2.amazonaws.com/production/v4/companies", requestOptions)
 
   let data = await response.json();
   return data[0]
@@ -124,7 +125,7 @@ async function getRandomGame() {
 
   try {
     const response = await fetch(
-      "https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games",
+      "https://" + apiGateway + ".execute-api.us-west-2.amazonaws.com/production/v4/games",
       requestOptions
     );
 
@@ -171,7 +172,7 @@ async function gameSearch() {
     redirect: "follow"
   };
 
-  let response = await fetch("https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games", requestOptions)
+  let response = await fetch("https://" + apiGateway + ".execute-api.us-west-2.amazonaws.com/production/v4/games", requestOptions)
   
   let data = await response.json();
   
@@ -279,7 +280,7 @@ async function gameSelect(gameId) {
     redirect: "follow"
   };
 
-  let response = await fetch("https://ho8o8ytc66.execute-api.us-west-2.amazonaws.com/production/v4/games", requestOptions)
+  let response = await fetch("https://" + apiGateway + ".execute-api.us-west-2.amazonaws.com/production/v4/games", requestOptions)
 
   let data = await response.json();
   console.log(data);
@@ -373,6 +374,7 @@ async function gameSelect(gameId) {
       // Attach click listener to all images with the "screenshot" class
       document.querySelectorAll(".screenshot").forEach((image) => {
         image.addEventListener("click", () => {
+          document.getElementById("lightbox").style.visibility = "visible";
           lightbox.style.display = "flex"; // Show the lightbox
           lightboxImage.src = image.src; // Set the lightbox image
           lightboxImage.alt = image.alt; // Set the alt text for accessibility
