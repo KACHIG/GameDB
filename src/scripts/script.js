@@ -5,6 +5,7 @@ const gamesForRandom = ["mario", "zelda", "doom", "xenoblade", "xenosaga", "xeno
 
 let usedGames = []
 
+//These three functions changes the visibility of each 'layer'
 function showGameResults() {
   document.getElementById("mainPage").style.visibility = "hidden";
   document.getElementById("gameInfo").style.visibility = "hidden";
@@ -54,6 +55,7 @@ lightbox.addEventListener("click", (event) => {
   }
 });
 
+//This function searches through the API to return a URL with the cover image
 async function getCover(coverId) {
   const myHeaders = new Headers();
   myHeaders.append("x-api-key", apiKey);
@@ -75,6 +77,7 @@ async function getCover(coverId) {
   return 'https://images.igdb.com/igdb/image/upload/t_cover_big/' + imageId +'.jpg'
 };
 
+//This function looks through the API using a company ID to retrieve the company name
 async function getCompany(companyId) {
   const myHeaders = new Headers();
   myHeaders.append("x-api-key", apiKey);
@@ -155,7 +158,7 @@ async function getRandomGame() {
   }
 }
 
-
+//This function lets you search a keyword and it will pull back a list of results from the API
 async function gameSearch() {
   let searchQuery = document.getElementById("searchField").value.trim();
   console.log(searchQuery);
@@ -233,6 +236,7 @@ async function gameSearch() {
   showGameResults();
 };
 
+//This function is to update the game info page with the games developer abd publisher
 async function updateCompanyInfo(game) {
   const developerElement = document.getElementById("developer");
   const publisherElement = document.getElementById("publisher");
@@ -264,8 +268,7 @@ async function updateCompanyInfo(game) {
   publisherElement.textContent = publisher?.name || "Unknown Publisher";
 }
 
-
-
+//The gameSelect function will call back to functions to populate the game info page with a cover, description, screenshots and other useful info about the game
 async function gameSelect(gameId) {
   const myHeaders = new Headers();
   myHeaders.append("x-api-key", apiKey);
@@ -393,6 +396,7 @@ async function gameSelect(gameId) {
   }
 };
 
+//This function will display the random games on the front page
 async function displayCarousel() {
   const carouselIds = ["game-image-1", "game-image-2", "game-image-3", "game-image-4", "game-image-5", "game-image-6"];
   const nameIds = ["game-name-1", "game-name-2", "game-name-3", "game-name-4", "game-name-5", "game-name-6"];
